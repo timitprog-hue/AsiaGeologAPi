@@ -80,31 +80,54 @@ class ReportController extends Controller
     // index & show biarin dulu, sudah oke
 
     public function index(Request $request)
-    {
-        $user = $request->user();
+{
+    $user = $request->user();
 
-        $q = SalesReport::with(['user:id,name,email,role','photos'])
-            ->orderByDesc('captured_at');
+    $q = SalesReport::query()
+        ->with([
+            'photos',
+            'user:id,name,email,role,is_active'
+        ])
+        ->latest('captured_at');
 
-        // Sales hanya lihat miliknya
-        if ($user->role === 'sales') {
-            $q->where('user_id', $user->id);
-        } else {
-            // Boss boleh filter user tertentu
-            if ($request->filled('user_id')) {
-                $q->where('user_id', $request->integer('user_id'));
-            }
-        }
-
-        if ($request->filled('date_from')) {
-            $q->whereDate('captured_at', '>=', $request->date('date_from'));
-        }
-        if ($request->filled('date_to')) {
-            $q->whereDate('captured_at', '<=', $request->date('date_to'));
-        }
-
-        return response()->json($q->paginate(20));
+    // sales hanya lihat miliknya sendiri
+    if ($user->role === 'sales') {
+        $q->where('user_id', $user->id);
     }
+
+    // admin bisa filter per sales
+    if ($user->role === 'admin' && $request->filled('user_id')) {
+        $q->where('user_id', $request->user_id);
+    }
+
+    // filter tanggal (opsional)
+    if ($request->filled('date_from')) {
+        $q->whereDate('captured_at', '>=', $request->date_from);
+    }
+    if ($request->filled('date_to')) {
+        $q->whereDate('captured_at', '<=', $request->date_to);
+    }
+
+    // search (alamat / catatan)
+    if ($request->filled('q')) {
+        $kw = trim($request->q);
+        $q->where(function ($qq) use ($kw) {
+            $qq->where('address', 'like', "%{$kw}%")
+               ->orWhere('notes', 'like', "%{$kw}%");
+        });
+    }
+
+    // optional: per_page
+    $perPage = (int) ($request->get('per_page', 20));
+    $perPage = max(5, min(50, $perPage));
+
+    // ✅ return paginate langsung (format standar Laravel)
+    return response()->json(
+        $q->paginate($perPage)
+    );
+}
+
+
 
     public function show(Request $request, SalesReport $report)
     {
