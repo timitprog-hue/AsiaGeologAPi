@@ -6,9 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\SalesReport;
 use App\Models\SalesReportPhoto;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
-use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Str;
 
 class ReportController extends Controller
 {
@@ -45,89 +44,85 @@ class ReportController extends Controller
         // 2) simpan file ke disk public
         $file = $request->file('photo');
         $ext  = $file->getClientOriginalExtension() ?: 'jpg';
-        $name = Str::uuid()->toString().'.'.$ext;
+        $name = Str::uuid()->toString() . '.' . $ext;
 
-        // path relatif di disk public: reports/{user}/{report}/{file}
-        $relPath = "reports/{$user->id}/{$report->id}/{$name}";
-        Storage::disk('public')->putFileAs(
-            "reports/{$user->id}/{$report->id}",
-            $file,
-            $name
-        );
+        $dir = "reports/{$user->id}/{$report->id}";
+        $stored = Storage::disk('public')->putFileAs($dir, $file, $name);
 
-        // 3) buat url publik (pakai disk public)
-        $url = Storage::disk('public')->url($relPath);
-        // hasilnya biasanya: http://IP:PORT/storage/reports/...
+        // ✅ kalau gagal simpan file: hapus report biar DB gak “yatim”
+        if (!$stored) {
+            $report->delete();
+            return response()->json([
+                'message' => 'Gagal menyimpan foto ke storage (disk public).'
+            ], 500);
+        }
+
+        // $stored = "reports/{user}/{report}/{file}.jpg"
+        $relPath = $stored;
 
         SalesReportPhoto::create([
-    'sales_report_id' => $report->id,
-    'file_path'       => $relPath,
-    'mime_type'       => $file->getMimeType(),
-    'size_bytes'      => $file->getSize(),
-]);
+            'sales_report_id' => $report->id,
+            'file_path'       => $relPath,
+            'mime_type'       => $file->getMimeType(),
+            'size_bytes'      => $file->getSize(),
+        ]);
 
+        // ✅ URL publik (tanpa Storage::url biar editor ga merah)
+        $photoUrl = asset('storage/' . ltrim($relPath, '/'));
 
         return response()->json([
-    'message'   => 'Report uploaded',
-    'report_id' => $report->id,
-    'photo_url' => Storage::disk('public')->url($relPath),
-    'address'   => $address,
-], 201);
-
+            'message'   => 'Report uploaded',
+            'report_id' => $report->id,
+            'photo_url' => $photoUrl,
+            'address'   => $address,
+        ], 201);
     }
-
-
-    // index & show biarin dulu, sudah oke
 
     public function index(Request $request)
-{
-    $user = $request->user();
+    {
+        $user = $request->user();
 
-    $q = SalesReport::query()
-        ->with([
-            'photos',
-            'user:id,name,email,role,is_active'
-        ])
-        ->latest('captured_at');
+        $q = SalesReport::query()
+            ->with([
+                'photos',
+                'user:id,name,email,role,is_active'
+            ])
+            ->latest('captured_at');
 
-    // sales hanya lihat miliknya sendiri
-    if ($user->role === 'sales') {
-        $q->where('user_id', $user->id);
+        // sales hanya lihat miliknya sendiri
+        if ($user->role === 'sales') {
+            $q->where('user_id', $user->id);
+        }
+
+        // admin bisa filter per sales
+        if ($user->role === 'admin' && $request->filled('user_id')) {
+            $q->where('user_id', $request->user_id);
+        }
+
+        // filter tanggal (opsional)
+        if ($request->filled('date_from')) {
+            $q->whereDate('captured_at', '>=', $request->date_from);
+        }
+        if ($request->filled('date_to')) {
+            $q->whereDate('captured_at', '<=', $request->date_to);
+        }
+
+        // search (alamat / catatan)
+        if ($request->filled('q')) {
+            $kw = trim($request->q);
+            $q->where(function ($qq) use ($kw) {
+                $qq->where('address', 'like', "%{$kw}%")
+                   ->orWhere('notes', 'like', "%{$kw}%");
+            });
+        }
+
+        $perPage = (int) ($request->get('per_page', 20));
+        $perPage = max(5, min(50, $perPage));
+
+        return response()->json(
+            $q->paginate($perPage)
+        );
     }
-
-    // admin bisa filter per sales
-    if ($user->role === 'admin' && $request->filled('user_id')) {
-        $q->where('user_id', $request->user_id);
-    }
-
-    // filter tanggal (opsional)
-    if ($request->filled('date_from')) {
-        $q->whereDate('captured_at', '>=', $request->date_from);
-    }
-    if ($request->filled('date_to')) {
-        $q->whereDate('captured_at', '<=', $request->date_to);
-    }
-
-    // search (alamat / catatan)
-    if ($request->filled('q')) {
-        $kw = trim($request->q);
-        $q->where(function ($qq) use ($kw) {
-            $qq->where('address', 'like', "%{$kw}%")
-               ->orWhere('notes', 'like', "%{$kw}%");
-        });
-    }
-
-    // optional: per_page
-    $perPage = (int) ($request->get('per_page', 20));
-    $perPage = max(5, min(50, $perPage));
-
-    // ✅ return paginate langsung (format standar Laravel)
-    return response()->json(
-        $q->paginate($perPage)
-    );
-}
-
-
 
     public function show(Request $request, SalesReport $report)
     {
@@ -137,32 +132,26 @@ class ReportController extends Controller
             abort(403);
         }
 
-        $report->load(['user:id,name,email,role','photos']);
+        $report->load(['user:id,name,email,role,is_active','photos']);
         return response()->json($report);
     }
 
     public function photo(Request $request, SalesReportPhoto $photo)
-{
-    $user = $request->user();
+    {
+        $user = $request->user();
 
-    // ambil report terkait
-    $photo->loadMissing('report');
+        $photo->loadMissing('report');
 
-    // sales hanya boleh lihat foto miliknya
-    if ($user->role === 'sales' && $photo->report->user_id !== $user->id) {
-        abort(403);
+        if ($user->role === 'sales' && $photo->report->user_id !== $user->id) {
+            abort(403);
+        }
+
+        $path = $photo->file_path;
+
+        if (!$path || !Storage::disk('public')->exists($path)) {
+            abort(404);
+        }
+
+        return response()->file(Storage::disk('public')->path($path));
     }
-
-    // boss/marketing boleh
-    $path = $photo->file_path; // contoh: reports/1/14/xxx.jpg
-
-    if (!$path || !Storage::disk('public')->exists($path)) {
-        abort(404);
-    }
-
-    // return file binary
-    return response()->file(Storage::disk('public')->path($path));
 }
-}
-
-
