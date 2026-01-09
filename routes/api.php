@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\LiveLocationController;
 
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -22,6 +23,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/reports', [ReportController::class, 'store']);
     Route::get('/reports/{report}', [ReportController::class, 'show']);
     // Route::get('/photos/{photo}', [ReportController::class, 'photo'])->whereNumber('photo');
+
+    Route::post('/live-locations', [LiveLocationController::class, 'upsert']);
+    Route::get('/live-locations', [LiveLocationController::class, 'index']);
     
 
 
