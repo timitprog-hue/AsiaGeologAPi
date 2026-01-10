@@ -3626,3 +3626,5 @@
 [2026-01-10 09:57:41] local.INFO: LOGIN USER CHECK {"user_found":true,"is_active":1,"hash_ok":true} 
 [2026-01-10 10:00:06] local.INFO: LOGIN REQUEST {"content_type":"application/json","accept":"application/json","payload":{"email":"admin@test.com","password":"password"}} 
 [2026-01-10 10:00:07] local.INFO: LOGIN USER CHECK {"user_found":true,"is_active":1,"hash_ok":true} 
+[2026-01-10 10:28:47] local.INFO: LOGIN REQUEST {"content_type":"application/json","accept":"application/json","payload":{"email":"admin@test.com","password":"password"}} 
+[2026-01-10 10:28:47] local.INFO: LOGIN USER CHECK {"user_found":true,"is_active":1,"hash_ok":true} 
