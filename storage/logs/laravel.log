@@ -3606,3 +3606,23 @@
 [2026-01-09 09:41:06] local.INFO: LOGIN USER CHECK {"user_found":true,"is_active":1,"hash_ok":true} 
 [2026-01-09 09:42:15] local.INFO: LOGIN REQUEST {"content_type":"application/json","accept":"application/json","payload":{"email":"admin@test.com","password":"password"}} 
 [2026-01-09 09:42:15] local.INFO: LOGIN USER CHECK {"user_found":true,"is_active":1,"hash_ok":true} 
+[2026-01-09 14:24:57] local.INFO: LOGIN REQUEST {"content_type":"application/json","accept":"application/json","payload":{"email":"admin@test.com","password":"password"}} 
+[2026-01-09 14:25:01] local.INFO: LOGIN USER CHECK {"user_found":true,"is_active":1,"hash_ok":true} 
+[2026-01-09 14:26:21] local.INFO: LOGIN REQUEST {"content_type":"application/json","accept":"application/json","payload":{"email":"sales1@test.com","password":"password"}} 
+[2026-01-09 14:26:22] local.INFO: LOGIN USER CHECK {"user_found":true,"is_active":1,"hash_ok":true} 
+[2026-01-09 14:27:46] local.INFO: LOGIN REQUEST {"content_type":"application/json","accept":"application/json","payload":{"email":"admin@test.com","password":"password"}} 
+[2026-01-09 14:27:46] local.INFO: LOGIN USER CHECK {"user_found":true,"is_active":1,"hash_ok":true} 
+[2026-01-10 09:50:30] local.INFO: LOGIN REQUEST {"content_type":"application/json","accept":"application/json","payload":{"email":"admin@test.com","password":"password"}} 
+[2026-01-10 09:50:33] local.INFO: LOGIN USER CHECK {"user_found":true,"is_active":1,"hash_ok":true} 
+[2026-01-10 09:50:36] local.INFO: LOGIN REQUEST {"content_type":"application/json","accept":"application/json","payload":{"email":"admin@test.com","password":"password"}} 
+[2026-01-10 09:50:36] local.INFO: LOGIN USER CHECK {"user_found":true,"is_active":1,"hash_ok":true} 
+[2026-01-10 09:50:37] local.INFO: LOGIN REQUEST {"content_type":"application/json","accept":"application/json","payload":{"email":"admin@test.com","password":"password"}} 
+[2026-01-10 09:50:37] local.INFO: LOGIN USER CHECK {"user_found":true,"is_active":1,"hash_ok":true} 
+[2026-01-10 09:53:53] local.INFO: LOGIN REQUEST {"content_type":"application/json","accept":"application/json","payload":{"email":"sales1@test.com","password":"password"}} 
+[2026-01-10 09:53:53] local.INFO: LOGIN USER CHECK {"user_found":true,"is_active":1,"hash_ok":true} 
+[2026-01-10 09:56:06] local.INFO: LOGIN REQUEST {"content_type":"application/json","accept":"application/json","payload":{"email":"admin@test.com","password":"password"}} 
+[2026-01-10 09:56:07] local.INFO: LOGIN USER CHECK {"user_found":true,"is_active":1,"hash_ok":true} 
+[2026-01-10 09:57:40] local.INFO: LOGIN REQUEST {"content_type":"application/json","accept":"application/json","payload":{"email":"fellisa@test.com","password":"password"}} 
+[2026-01-10 09:57:41] local.INFO: LOGIN USER CHECK {"user_found":true,"is_active":1,"hash_ok":true} 
+[2026-01-10 10:00:06] local.INFO: LOGIN REQUEST {"content_type":"application/json","accept":"application/json","payload":{"email":"admin@test.com","password":"password"}} 
+[2026-01-10 10:00:07] local.INFO: LOGIN USER CHECK {"user_found":true,"is_active":1,"hash_ok":true} 
