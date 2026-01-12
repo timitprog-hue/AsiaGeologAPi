@@ -3626,6 +3626,7 @@
 [2026-01-10 09:57:41] local.INFO: LOGIN USER CHECK {"user_found":true,"is_active":1,"hash_ok":true} 
 [2026-01-10 10:00:06] local.INFO: LOGIN REQUEST {"content_type":"application/json","accept":"application/json","payload":{"email":"admin@test.com","password":"password"}} 
 [2026-01-10 10:00:07] local.INFO: LOGIN USER CHECK {"user_found":true,"is_active":1,"hash_ok":true} 
+<<<<<<< HEAD
 [2026-01-10 10:25:25] local.INFO: LOGIN REQUEST {"content_type":"application/json","accept":"application/json","payload":{"email":"admin@test.com","password":"password"}} 
 [2026-01-10 10:25:26] local.INFO: LOGIN USER CHECK {"user_found":true,"is_active":1,"hash_ok":true} 
 [2026-01-10 10:29:24] local.INFO: LOGIN REQUEST {"content_type":"application/json","accept":"application/json","payload":{"email":"admin@test.com","password":"password"}} 
@@ -3682,3 +3683,7 @@
 [2026-01-12 09:23:22] local.INFO: LOGIN USER CHECK {"user_found":true,"is_active":1,"hash_ok":true} 
 [2026-01-12 09:23:54] local.INFO: LOGIN REQUEST {"content_type":"application/json","accept":"application/json","payload":{"email":"admin@test.com","password":"password"}} 
 [2026-01-12 09:23:55] local.INFO: LOGIN USER CHECK {"user_found":true,"is_active":1,"hash_ok":true} 
+=======
+[2026-01-10 10:28:47] local.INFO: LOGIN REQUEST {"content_type":"application/json","accept":"application/json","payload":{"email":"admin@test.com","password":"password"}} 
+[2026-01-10 10:28:47] local.INFO: LOGIN USER CHECK {"user_found":true,"is_active":1,"hash_ok":true} 
+>>>>>>> 88a3262bcb6e6efd9865f946a1cf43f9c45e8b08
